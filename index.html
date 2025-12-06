@@ -1,697 +1,190 @@
-<script>
-(function() {
-  // Tambahkan input URL ke halaman
-  const urlInput = document.createElement('input');
-  urlInput.type = 'text';
-  urlInput.placeholder = 'Masukkan URL di sini...';
-  urlInput.id = 'urlInput';
-  urlInput.style.cssText = `
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    width: 300px;
-    padding: 10px;
-    z-index: 9999;
-    background: white;
-    border: 2px solid #333;
-    border-radius: 5px;
-  `;
-  
-  // Tambahkan tombol untuk menerapkan URL
-  const applyButton = document.createElement('button');
-  applyButton.textContent = 'Terapkan';
-  applyButton.id = 'applyButton';
-  applyButton.style.cssText = `
-    position: fixed;
-    top: 10px;
-    left: 320px;
-    padding: 10px 15px;
-    z-index: 9999;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  `;
-  
-  // Tambahkan elemen input dan tombol ke body
-  document.body.appendChild(urlInput);
-  document.body.appendChild(applyButton);
-  
-  // Fungsi untuk mengubah konten dengan URL
-  function updateContentWithUrl(url) {
-    // Update head
-    document.head.innerHTML = `<title>URL: ${url}</title>
-                               <meta name="description" content="URL yang dimasukkan: ${url}">`;
-    
-    // Update body
-    document.body.innerHTML = `
-      <div style="padding: 20px; font-family: Arial, sans-serif;">
-        <h1>URL yang Anda Masukkan:</h1>
-        <p style="font-size: 18px; color: #0066cc;"><strong>${url}</strong></p>
-        <p>URL ini telah diterapkan ke kedua elemen (head dan body)</p>
-        <div style="margin-top: 20px;">
-          <h3>Informasi Head:</h3>
-          <pre style="background: #f4f4f4; padding: 10px;">${document.head.innerHTML}</pre>
-        </div>
-      </div>
-    `;
-    
-    // Tambahkan kembali input dan tombol setelah mengganti konten
-    document.body.appendChild(urlInput);
-    document.body.appendChild(applyButton);
-    
-    // Setup event listener baru untuk tombol
-    document.getElementById('applyButton').onclick = function() {
-      const newUrl = document.getElementById('urlInput').value;
-      if (newUrl) {
-        updateContentWithUrl(newUrl);
-      }
-    };
-    
-    // Juga bisa langsung dengan Enter
-    document.getElementById('urlInput').onkeypress = function(e) {
-      if (e.key === 'Enter') {
-        const newUrl = this.value;
-        if (newUrl) {
-          updateContentWithUrl(newUrl);
-        }
-      }
-    };
-  }
-  
-  // Event listener untuk tombol
-  applyButton.onclick = function() {
-    const url = urlInput.value;
-    if (url) {
-      updateContentWithUrl(url);
-    }
-  };
-  
-  // Event listener untuk Enter pada input
-  urlInput.onkeypress = function(e) {
-    if (e.key === 'Enter') {
-      const url = this.value;
-      if (url) {
-        updateContentWithUrl(url);
-      }
-    }
-  };
-  
-  // Override body untuk demonstrasi
-  Object.defineProperty(document, 'body', {
-    get: function() {
-      const fakeBody = document.createElement('body');
-      fakeBody.innerHTML = `
-        <div style="padding: 20px;">
-          <h2>Body di-override!</h2>
-          <p>Gunakan input di atas untuk memasukkan URL</p>
-          <p>URL akan diterapkan ke head dan body</p>
-        </div>
-      `;
-      fakeBody.appendChild(urlInput);
-      fakeBody.appendChild(applyButton);
-      return fakeBody;
-    }
-  });
-  
-})();
-</script>            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'JetBrains Mono', monospace;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Animated background */
-        body::before {
-            content: '';
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input URL ke Head dan Body</title>
+    <style>
+        #urlInput {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(123, 47, 247, 0.1) 0%, transparent 50%);
-            animation: backgroundShift 15s ease infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes backgroundShift {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.1); }
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 20px;
-        }
-
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            animation: glow 3s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.5)); }
-            50% { filter: drop-shadow(0 0 20px rgba(123, 47, 247, 0.5)); }
-        }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 400;
-        }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
-        }
-
-        .card-header {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--accent-primary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card-header::before {
-            content: '▸';
-            color: var(--accent-secondary);
-            font-size: 24px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-secondary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        input[type="text"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
-        }
-
-        textarea {
-            min-height: 200px;
-            resize: vertical;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:hover::before {
+            top: 10px;
+            left: 10px;
             width: 300px;
-            height: 300px;
+            padding: 10px;
+            z-index: 9999;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 5px;
+            font-size: 14px;
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 217, 255, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .bookmarklet-output {
-            background: var(--bg-secondary);
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
-            word-break: break-all;
-            font-size: 12px;
-            color: var(--text-secondary);
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .bookmarklet-link {
-            display: inline-block;
-            padding: 8px 16px;
-            background: var(--success);
-            color: #000;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 700;
-            margin-top: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .bookmarklet-link:hover {
-            background: var(--accent-primary);
+        
+        #applyButton {
+            position: fixed;
+            top: 10px;
+            left: 320px;
+            padding: 10px 15px;
+            z-index: 9999;
+            background: #4CAF50;
             color: white;
-            transform: scale(1.05);
-        }
-
-        .iframe-container {
-            margin-top: 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            background: var(--bg-secondary);
-            min-height: 500px;
-        }
-
-        iframe {
-            width: 100%;
-            height: 600px;
             border: none;
-            display: block;
-        }
-
-        .warning {
-            background: rgba(255, 170, 0, 0.1);
-            border-left: 4px solid var(--warning);
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .info {
-            background: rgba(0, 217, 255, 0.1);
-            border-left: 4px solid var(--accent-primary);
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .info strong {
-            color: var(--accent-primary);
-        }
-
-        .template-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-        }
-
-        .template-btn {
-            padding: 6px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 12px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            font-size: 14px;
         }
-
-        .template-btn:hover {
-            background: var(--accent-primary);
-            color: white;
-            border-color: var(--accent-primary);
+        
+        #applyButton:hover {
+            background: #45a049;
         }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 12px;
-            }
-
-            .card {
-                padding: 16px;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
+        
+        .content-container {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin-top: 60px;
         }
-
-        /* Dark mode toggle */
-        html.light body::before {
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 102, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(123, 47, 247, 0.08) 0%, transparent 50%);
+        
+        .info-box {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .url-display {
+            font-size: 18px;
+            color: #0066cc;
+            font-weight: bold;
+            background: #e6f7ff;
+            padding: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>⚡ Jr G</h1>
-            <p class="subtitle">AGEN PULSA</p>
-        </header>
-
-        <!-- KARTU URL - Ditempatkan pertama -->
-        <div class="card">
-            <div class="card-header">URL WEBSITE</div>
-            
-            <div class="info">
-                <strong>🌐 Masukkan URL:</strong> Isi kolom URL di bawah ini untuk memuat website yang ingin diuji
-            </div>
-
-            <div class="input-group">
-                <label>URL Website Target</label>
-                <input type="text" id="urlInput" placeholder="https://example.com" value="https://example.com">
-            </div>
-
-            <div class="btn-group">
-                <button class="btn" onclick="loadIframe()">🌐 Load Website</button>
-                <button class="btn" onclick="loadIframeWithCustomJS()">🚀 Load dengan J PULSA</button>
-                <button class="btn" onclick="clearIframe()">🗑️ Clear</button>
-            </div>
-
-            <div id="iframeContainer" class="iframe-container" style="display: none;">
-                <iframe id="targetIframe" sandbox="allow-scripts allow-same-origin"></iframe>
-            </div>
-        </div>
-
-        <!-- KARTU J PULSA - Ditempatkan kedua -->
-        <div class="card">
-            <div class="card-header">J PULSA - KODE JAVASCRIPT</div>
-            
-            <div class="info">
-                <strong>📝 Kode JavaScript:</strong> Masukkan kode JavaScript yang akan dieksekusi pada URL di atas
-            </div>
-
-            <div class="template-buttons">
-                <button class="template-btn" onclick="loadTemplate('hello')">Hello Alert</button>
-                <button class="template-btn" onclick="loadTemplate('custom')">Script Custom Anda</button>
-                <button class="template-btn" onclick="loadTemplate('inspect')">Page Inspector</button>
-                <button class="template-btn" onclick="loadTemplate('highlight')">Highlight Links</button>
-            </div>
-
-            <div class="input-group">
-                <label>Kode J PULSA (JavaScript)</label>
-                <textarea id="jsCode" placeholder="Masukkan kode J PULSA (JavaScript) Anda di sini...">(function() {
-  document.head.innerHTML = "Halo";
-  document.body.innerHTML = "Halo";
-  Object.defineProperty(document, 'body', {
-    get: function() {
-      return document.createElement('body');
-    }
-  });
-})();</textarea>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn" onclick="generateBookmarklet()">🔗 Generate Bookmarklet</button>
-                <button class="btn" onclick="copyBookmarklet()">📋 Copy ke Clipboard</button>
-            </div>
-
-            <div id="bookmarkletOutput" style="display: none;">
-                <div class="info">
-                    <strong>✅ Bookmarklet berhasil dibuat!</strong><br>
-                    <strong>Cara menggunakan:</strong><br>
-                    1. Drag tautan bookmarklet ke bookmarks bar browser Anda<br>
-                    2. Buka website target (URL di atas)<br>
-                    3. Klik bookmarklet untuk mengeksekusi kode JavaScript
-                </div>
-                <div class="bookmarklet-output">
-                    <code id="bookmarkletCode"></code>
-                </div>
-                <a id="bookmarkletLink" class="bookmarklet-link" target="_blank">🚀 Jalankan Bookmarklet</a>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">📚 Petunjuk Penggunaan</div>
-            
-            <div class="info">
-                <strong>Langkah-langkah:</strong><br>
-                1. <strong>URL Website</strong> - Masukkan URL website yang ingin diuji di bagian pertama<br>
-                2. <strong>J PULSA</strong> - Masukkan kode JavaScript di bagian kedua<br>
-                3. <strong>Load Website</strong> - Klik tombol untuk memuat website<br>
-                4. <strong>Load dengan J PULSA</strong> - Klik untuk memuat website dengan kode JavaScript<br>
-                5. <strong>Generate Bookmarklet</strong> - Buat bookmarklet untuk digunakan di browser lain
-                <br><br>
-                <strong>Catatan:</strong> Website akan ditampilkan dalam iframe untuk keamanan.
-            </div>
+    <!-- Input untuk URL -->
+    <input type="text" id="urlInput" placeholder="Masukkan URL lengkap di sini...">
+    <button id="applyButton">Terapkan URL</button>
+    
+    <!-- Konten awal -->
+    <div class="content-container">
+        <h1>Aplikasi Input URL</h1>
+        <p>Masukkan URL di kotak input di atas, kemudian klik "Terapkan URL"</p>
+        <p>URL akan diterapkan ke:</p>
+        <ul>
+            <li><strong>Head:</strong> Sebagai judul halaman dan meta description</li>
+            <li><strong>Body:</strong> Sebagai konten yang ditampilkan</li>
+        </ul>
+        
+        <div class="info-box">
+            <h3>Status saat ini:</h3>
+            <p>URL: <span id="currentUrlDisplay" class="url-display">Belum ada URL yang dimasukkan</span></p>
+            <p id="headInfo">Head belum diubah</p>
         </div>
     </div>
 
     <script>
-        // Dark mode detection
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.remove('light');
-        } else {
-            document.documentElement.classList.add('light');
+    (function() {
+        const urlInput = document.getElementById('urlInput');
+        const applyButton = document.getElementById('applyButton');
+        const currentUrlDisplay = document.getElementById('currentUrlDisplay');
+        const headInfo = document.getElementById('headInfo');
+        
+        // Fungsi untuk mengubah konten dengan URL
+        function updateContentWithUrl(url) {
+            try {
+                // 1. Update Head
+                const newTitle = `URL: ${url}`;
+                document.title = newTitle;
+                
+                // Update atau buat meta description
+                let metaDesc = document.querySelector('meta[name="description"]');
+                if (!metaDesc) {
+                    metaDesc = document.createElement('meta');
+                    metaDesc.name = "description";
+                    document.head.appendChild(metaDesc);
+                }
+                metaDesc.content = `URL yang dimasukkan: ${url}`;
+                
+                // Update info head
+                headInfo.innerHTML = `
+                    Head telah diupdate:<br>
+                    - Title: "${newTitle}"<br>
+                    - Meta Description: "${metaDesc.content}"
+                `;
+                
+                // 2. Update Body Content
+                currentUrlDisplay.textContent = url;
+                currentUrlDisplay.style.color = '#2196F3';
+                
+                // Tambahkan konten baru
+                const contentContainer = document.querySelector('.content-container');
+                const newContent = document.createElement('div');
+                newContent.className = 'info-box';
+                newContent.innerHTML = `
+                    <h3>Informasi URL yang diterapkan:</h3>
+                    <p><strong>URL:</strong> <span class="url-display">${url}</span></p>
+                    <p><strong>Waktu:</strong> ${new Date().toLocaleString()}</p>
+                    <p><strong>Domain:</strong> ${extractDomain(url)}</p>
+                `;
+                
+                // Sisipkan setelah elemen info-box pertama
+                const firstInfoBox = document.querySelector('.info-box');
+                contentContainer.insertBefore(newContent, firstInfoBox.nextSibling);
+                
+                // 3. Update URL display
+                const urlDisplay = document.querySelector('.url-display');
+                if (urlDisplay) {
+                    urlDisplay.textContent = url;
+                }
+                
+            } catch (error) {
+                console.error('Error updating content:', error);
+                alert('Terjadi kesalahan saat memperbarui konten.');
+            }
         }
         
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-            if (event.matches) {
-                document.documentElement.classList.remove('light');
+        // Fungsi untuk mengekstrak domain dari URL
+        function extractDomain(url) {
+            try {
+                const urlObj = new URL(url);
+                return urlObj.hostname;
+            } catch {
+                return 'Format URL tidak valid';
+            }
+        }
+        
+        // Event listener untuk tombol
+        applyButton.addEventListener('click', function() {
+            const url = urlInput.value.trim();
+            if (url) {
+                // Validasi URL sederhana
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    alert('Harap gunakan URL lengkap dengan http:// atau https://');
+                    return;
+                }
+                updateContentWithUrl(url);
             } else {
-                document.documentElement.classList.add('light');
+                alert('Harap masukkan URL terlebih dahulu!');
             }
         });
-
-        // Templates
-        const templates = {
-            hello: `alert('Halo! TRANSAKSI berhasil !');`,
-            custom: `(function() {
-  document.head.innerHTML = "Halo";
-  document.body.innerHTML = "Halo";
-  Object.defineProperty(document, 'body', {
-    get: function() {
-      return document.createElement('body');
-    }
-  });
-})();`,
-            inspect: `(function() {
-  var info = 'Page Info:\\n';
-  info += 'Title: ' + document.title + '\\n';
-  info += 'URL: ' + window.location.href + '\\n';
-  info += 'Domain: ' + window.location.hostname + '\\n';
-  info += 'Links: ' + document.links.length + '\\n';
-  info += 'Images: ' + document.images.length;
-  alert(info);
-})();`,
-            highlight: `(function() {
-  var links = document.getElementsByTagName('a');
-  for(var i = 0; i < links.length; i++) {
-    links[i].style.backgroundColor = 'yellow';
-    links[i].style.border = '2px solid red';
-  }
-  alert('Highlighted ' + links.length + ' links!');
-})();`
-        };
-
-        function loadTemplate(name) {
-            document.getElementById('jsCode').value = templates[name];
-        }
-
-        function generateBookmarklet() {
-            const code = document.getElementById('jsCode').value.trim();
-            if (!code) {
-                alert('Masukkan kode J PULSA terlebih dahulu!');
-                return;
+        
+        // Event listener untuk Enter pada input
+        urlInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyButton.click();
             }
-
-            // Generate bookmarklet URL
-            const bookmarkletUrl = 'javascript:' + encodeURIComponent(code);
-            
-            // Display output
-            document.getElementById('bookmarkletOutput').style.display = 'block';
-            document.getElementById('bookmarkletCode').textContent = bookmarkletUrl;
-            document.getElementById('bookmarkletLink').href = bookmarkletUrl;
-
-            // Scroll to output
-            document.getElementById('bookmarkletOutput').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function copyBookmarklet() {
-            const code = document.getElementById('bookmarkletCode').textContent;
-            if (!code) {
-                alert('Generate terlebih dahulu!');
-                return;
+        });
+        
+        // Contoh override body (opsional, untuk demonstrasi)
+        const originalBodyGetter = Object.getOwnPropertyDescriptor(Document.prototype, 'body');
+        Object.defineProperty(document, 'body', {
+            get: function() {
+                console.log('Body diakses melalui getter override');
+                return originalBodyGetter.get.call(this);
             }
-
-            // Copy to clipboard
-            navigator.clipboard.writeText(code).then(() => {
-                alert('✅ Berhasil di copy ke clipboard!');
-            }).catch(err => {
-                // Fallback method
-                const textArea = document.createElement('textarea');
-                textArea.value = code;
-                textArea.style.position = 'fixed';
-                textArea.style.opacity = '0';
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    alert('✅ Berhasil dicopy ke clipboard!');
-                } catch (err) {
-                    alert('❌ Gagal copy. Silakan copy manual dari text box.');
-                }
-                document.body.removeChild(textArea);
-            });
-        }
-
-        function loadIframe() {
-            let url = document.getElementById('urlInput').value.trim();
-            if (!url) {
-                alert('Masukkan URL terlebih dahulu!');
-                return;
-            }
-
-            // Add protocol if missing
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'https://' + url;
-            }
-
-            // Show iframe container
-            document.getElementById('iframeContainer').style.display = 'block';
-            
-            // Load URL in iframe
-            const iframe = document.getElementById('targetIframe');
-            iframe.src = url;
-
-            // Scroll to iframe
-            document.getElementById('iframeContainer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function loadIframeWithCustomJS() {
-          let url = document.getElementById('urlInput').value.trim();
-          let customCode = document.getElementById('jsCode').value.trim();
-          
-          if (!url) {
-            alert('Masukkan URL terlebih dahulu!');
-            return;
-          }
-          
-          if (!customCode) {
-            alert('Masukkan kode J PULSA terlebih dahulu!');
-            return;
-          }
-          
-          // Add protocol if missing
-          if (!url.startsWith('http://') && !url.startsWith('https://')) {
-              url = 'https://' + url;
-          }
-          
-          // Buat halaman HTML dengan kode custom
-          const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <base href="${url}">
-              <script>
-                ${customCode}
-              </script>
-            </head>
-            <body>
-              <iframe src="${url}" style="width:100%; height:100vh; border:none;"></iframe>
-            </body>
-            </html>
-          `;
-          
-          // Show iframe container
-          document.getElementById('iframeContainer').style.display = 'block';
-          
-          // Load ke iframe
-          const iframe = document.getElementById('targetIframe');
-          iframe.srcdoc = htmlContent;
-          
-          // Scroll to iframe
-          doc
+        });
+        
+    })();
+    </script>
+</body>
+  </html>
