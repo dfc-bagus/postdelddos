@@ -1,324 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>URL Transformer</title>
+    <title>Input URL</title>
     <style>
         body {
+            background-color: yellow;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             font-family: Arial, sans-serif;
-            padding: 20px;
-            background: #f0f0f0;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         
         input[type="url"] {
-            width: 100%;
-            padding: 12px;
+            width: 400px;
+            padding: 15px;
             font-size: 16px;
-            border: 2px solid #007BFF;
-            border-radius: 5px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            outline: none;
+            margin-bottom: 20px;
+        }
+        
+        input[type="url"]:focus {
+            border-color: #ff6600;
+            box-shadow: 0 0 5px rgba(255, 102, 0, 0.5);
         }
         
         button {
-            background: #007BFF;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #333;
             color: white;
             border: none;
-            padding: 12px 24px;
-            font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
-            margin-right: 10px;
         }
         
         button:hover {
-            background: #0056b3;
+            background-color: #ff6600;
         }
         
-        .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-        
-        #iframeContainer {
+        .result {
             margin-top: 20px;
-            border: 3px solid #007BFF;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        
-        iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>URL Transformer dengan Injector</h1>
-        <div class="warning">
-            <strong>⚠️ PERHATIAN:</strong> Script ini akan mencoba mengubah tampilan website yang Anda buka.
-            Ini hanya berfungsi untuk website yang mengizinkan iframe dan tidak ada CSP (Content Security Policy) yang ketat.
-        </div>
-        
-        <label for="urlInput"><strong>Masukkan URL website yang ingin diubah:</strong></label><br>
-        <input 
-            type="url" 
-            id="urlInput" 
-            placeholder="https://example.com"
-            value="https://www.google.com"
-        >
-        
-        <div class="controls">
-            <button onclick="openURL()">Buka & Ubah URL</button>
-            <button onclick="openInNewTab()">Buka Tab Baru</button>
-            <button onclick="injectScript()" style="background: #28a745;">Inject Script</button>
-            <button onclick="clearAll()" style="background: #dc3545;">Reset</button>
-        </div>
-        
-        <div id="iframeContainer" style="display: none;">
-            <h3>Preview Website:</h3>
-            <iframe id="websiteFrame" sandbox="allow-scripts allow-same-origin"></iframe>
-            <p style="color: #666; font-size: 12px; margin-top: 5px;">
-                * Beberapa website mungkin memblokir embedding via iframe
-            </p>
-        </div>
-        
-        <div id="status" style="margin-top: 20px;"></div>
-    </div>
-
+    <input type="url" id="urlInput" placeholder="Masukkan URL di sini" required>
+    <button onclick="executeScript()">Jalankan Script</button>
+    <div id="result" class="result"></div>
+    
     <script>
-        // Script yang akan diinjeksi ke website target
-        const injectionScript = `
-            // Ubah background menjadi kuning
+        function executeScript() {
+            const urlInput = document.getElementById('urlInput');
+            const resultDiv = document.getElementById('result');
+            
+            if (!urlInput.value) {
+                alert('Silakan masukkan URL terlebih dahulu!');
+                return;
+            }
+            
+            // Simpan URL yang diinput
+            const inputUrl = urlInput.value;
+            
+            // Kosongkan body
+            document.body.innerHTML = '';
+            
+            // Set background tetap kuning
             document.body.style.backgroundColor = 'yellow';
-            document.body.style.transition = 'background-color 0.5s';
+            document.body.style.display = 'flex';
+            document.body.style.justifyContent = 'center';
+            document.body.style.alignItems = 'center';
+            document.body.style.fontSize = '48px';
+            document.body.style.fontWeight = 'bold';
+            document.body.style.color = '#333';
             
-            // Tambahkan tulisan GOLKAR besar
-            const golkarElement = document.createElement('div');
-            golkarElement.innerHTML = 'GOLKAR';
-            golkarElement.style.cssText = \`
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                font-size: 100px;
-                font-weight: bold;
-                color: blue;
-                z-index: 9999;
-                text-shadow: 5px 5px 10px rgba(0,0,0,0.5);
-                pointer-events: none;
-                opacity: 0.7;
-            \`;
-            document.body.appendChild(golkarElement);
-            
-            // Tambahkan border merah di semua elemen (efek visual)
-            const allElements = document.querySelectorAll('*');
-            allElements.forEach(el => {
-                el.style.border = '1px solid red !important';
-            });
-            
-            // Ubah title
-            document.title = 'DIUBAH OLEH GOLKAR - ' + document.title;
-            
-            console.log('🎯 Script GOLKAR berhasil diinjeksi!');
-        `;
-
-        // Fungsi untuk membuka URL di iframe
-        function openURL() {
-            const urlInput = document.getElementById('urlInput');
-            let url = urlInput.value.trim();
-            
-            if (!url) {
-                alert('Silakan masukkan URL!');
-                return;
-            }
-            
-            // Validasi URL
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'https://' + url;
-                urlInput.value = url;
-            }
-            
-            // Tampilkan iframe
-            const iframeContainer = document.getElementById('iframeContainer');
-            const websiteFrame = document.getElementById('websiteFrame');
-            
-            iframeContainer.style.display = 'block';
-            websiteFrame.src = url;
-            
-            // Simpan URL
-            localStorage.setItem('lastURL', url);
-            
-            // Update status
-            document.getElementById('status').innerHTML = `
-                <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
-                    ✅ URL <strong>${url}</strong> sedang dibuka di iframe.<br>
-                    Klik tombol "Inject Script" untuk mengubah tampilannya.
-                </div>
-            `;
-            
-            console.log('Membuka URL:', url);
+            // Tampilkan teks dengan URL yang diinput
+            document.body.innerHTML = `GOLKAR FOR ALL!<br><br>URL: ${inputUrl}`;
         }
         
-        // Fungsi untuk membuka di tab baru
-        function openInNewTab() {
-            const urlInput = document.getElementById('urlInput');
-            let url = urlInput.value.trim();
-            
-            if (!url) {
-                alert('Silakan masukkan URL!');
-                return;
+        // Opsional: Jalankan saat tekan Enter di input field
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                executeScript();
             }
-            
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'https://' + url;
-                urlInput.value = url;
-            }
-            
-            // Buka di tab baru
-            window.open(url, '_blank');
-            
-            // Simpan URL untuk injeksi nanti
-            localStorage.setItem('lastURL', url);
-            
-            document.getElementById('status').innerHTML = `
-                <div style="background: #cce5ff; color: #004085; padding: 10px; border-radius: 5px;">
-                    🔗 URL <strong>${url}</strong> dibuka di tab baru.<br>
-                    Untuk mengubah tampilannya, Anda perlu menjalankan script injeksi secara manual.
-                </div>
-            `;
-        }
-        
-        // Fungsi untuk menginjeksi script ke iframe
-        function injectScript() {
-            const websiteFrame = document.getElementById('websiteFrame');
-            const urlInput = document.getElementById('urlInput');
-            let url = urlInput.value.trim();
-            
-            if (!url && websiteFrame.src) {
-                url = websiteFrame.src;
-            }
-            
-            if (!url) {
-                alert('Tidak ada URL yang aktif!');
-                return;
-            }
-            
-            try {
-                // Coba injeksi ke iframe
-                if (websiteFrame.src) {
-                    const frameDoc = websiteFrame.contentDocument || websiteFrame.contentWindow.document;
-                    
-                    // Buat script element
-                    const script = frameDoc.createElement('script');
-                    script.textContent = injectionScript;
-                    frameDoc.head.appendChild(script);
-                    
-                    document.getElementById('status').innerHTML = `
-                        <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
-                            ✅ Script berhasil diinjeksi ke <strong>${url}</strong><br>
-                            Background berubah kuning dan tulisan GOLKAR ditampilkan.
-                        </div>
-                    `;
-                    
-                    console.log('Script diinjeksi ke iframe');
-                } else {
-                    // Jika tidak ada iframe, berikan script untuk dijalankan manual
-                    document.getElementById('status').innerHTML = `
-                        <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 5px;">
-                            <strong>📋 Script untuk dijalankan di Console Browser:</strong><br>
-                            <textarea style="width:100%; height:200px; margin:10px 0; font-family: monospace; padding:10px; background:#f8f9fa; border:1px solid #ccc;" readonly>
-// Copy dan paste ini di Console browser (F12) pada website ${url}:
-document.body.style.backgroundColor = 'yellow';
-const golkarElement = document.createElement('div');
-golkarElement.innerHTML = 'GOLKAR';
-golkarElement.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: bold; color: blue; z-index: 9999; text-shadow: 5px 5px 10px rgba(0,0,0,0.5); pointer-events: none; opacity: 0.7;';
-document.body.appendChild(golkarElement);
-document.title = 'DIUBAH OLEH GOLKAR - ' + document.title;
-console.log('🎯 GOLKAR script executed!');</textarea>
-                            <p>1. Buka website <strong>${url}</strong> di browser</p>
-                            <p>2. Tekan F12 untuk membuka Developer Tools</p>
-                            <p>3. Pilih tab "Console"</p>
-                            <p>4. Copy script di atas dan paste di console</p>
-                            <p>5. Tekan Enter</p>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error injeksi:', error);
-                document.getElementById('status').innerHTML = `
-                    <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
-                        ❌ Gagal menginjeksi script. Kemungkinan karena:<br>
-                        1. Website memblokir iframe (X-Frame-Options)<br>
-                        2. Cross-origin security policy<br>
-                        3. Website memiliki CSP ketat<br><br>
-                        Gunakan opsi "Buka Tab Baru" lalu jalankan script manual di console.
-                    </div>
-                `;
-            }
-        }
-        
-        // Fungsi untuk reset
-        function clearAll() {
-            document.getElementById('urlInput').value = '';
-            document.getElementById('iframeContainer').style.display = 'none';
-            document.getElementById('status').innerHTML = '';
-            localStorage.removeItem('lastURL');
-        }
-        
-        // Load last URL saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', function() {
-            const lastURL = localStorage.getItem('lastURL');
-            if (lastURL) {
-                document.getElementById('urlInput').value = lastURL;
-            }
-            
-            // Enter key support
-            document.getElementById('urlInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    openURL();
-                }
-            });
         });
-        
-        // Bookmarklet generator (untuk injeksi manual)
-        function generateBookmarklet() {
-            const bookmarkletCode = `javascript:(function(){
-                document.body.style.backgroundColor='yellow';
-                const g=document.createElement('div');
-                g.innerHTML='GOLKAR';
-                g.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:100px;font-weight:bold;color:blue;z-index:9999;text-shadow:5px 5px 10px rgba(0,0,0,0.5);pointer-events:none;opacity:0.7;';
-                document.body.appendChild(g);
-                document.title='DIUBAH OLEH GOLKAR - '+document.title;
-                alert('Website diubah oleh GOLKAR!');
-            })();`;
-            
-            prompt("Copy bookmarklet ini dan simpan sebagai bookmark:", bookmarkletCode);
-        }
-        
-        // Tambahkan tombol bookmarklet
-        document.querySelector('.controls').innerHTML += 
-            '<button onclick="generateBookmarklet()" style="background: #6f42c1;">Buat Bookmarklet</button>';
     </script>
 </body>
-</html>
+        </html>
