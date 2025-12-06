@@ -1,190 +1,182 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Input URL ke Head dan Body</title>
-    <style>
-        #urlInput {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            width: 300px;
-            padding: 10px;
-            z-index: 9999;
-            background: white;
-            border: 2px solid #333;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        
-        #applyButton {
-            position: fixed;
-            top: 10px;
-            left: 320px;
-            padding: 10px 15px;
-            z-index: 9999;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        #applyButton:hover {
-            background: #45a049;
-        }
-        
-        .content-container {
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            margin-top: 60px;
-        }
-        
-        .info-box {
-            background: #f4f4f4;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            border-left: 4px solid #4CAF50;
-        }
-        
-        .url-display {
-            font-size: 18px;
-            color: #0066cc;
-            font-weight: bold;
-            background: #e6f7ff;
-            padding: 10px;
-            border-radius: 5px;
-        }
-    </style>
+    <title>URL Persistence Example</title>
 </head>
 <body>
-    <!-- Input untuk URL -->
-    <input type="text" id="urlInput" placeholder="Masukkan URL lengkap di sini...">
-    <button id="applyButton">Terapkan URL</button>
-    
-    <!-- Konten awal -->
-    <div class="content-container">
-        <h1>Aplikasi Input URL</h1>
-        <p>Masukkan URL di kotak input di atas, kemudian klik "Terapkan URL"</p>
-        <p>URL akan diterapkan ke:</p>
-        <ul>
-            <li><strong>Head:</strong> Sebagai judul halaman dan meta description</li>
-            <li><strong>Body:</strong> Sebagai konten yang ditampilkan</li>
-        </ul>
-        
-        <div class="info-box">
-            <h3>Status saat ini:</h3>
-            <p>URL: <span id="currentUrlDisplay" class="url-display">Belum ada URL yang dimasukkan</span></p>
-            <p id="headInfo">Head belum diubah</p>
-        </div>
+    <!-- URL Input Kolom -->
+    <div style="padding: 20px; background: #f5f5f5;">
+        <label for="urlInput">Masukkan URL:</label><br>
+        <input 
+            type="url" 
+            id="urlInput" 
+            placeholder="https://example.com" 
+            style="width: 300px; padding: 8px; margin: 10px 0;"
+        >
+        <br>
+        <button onclick="updateContent()" style="padding: 8px 16px;">
+            Terapkan URL
+        </button>
+    </div>
+
+    <!-- Area untuk menampilkan konten -->
+    <div id="contentArea" style="padding: 20px; margin-top: 20px; border: 1px solid #ddd;">
+        Konten akan diubah di sini berdasarkan URL
     </div>
 
     <script>
-    (function() {
-        const urlInput = document.getElementById('urlInput');
-        const applyButton = document.getElementById('applyButton');
-        const currentUrlDisplay = document.getElementById('currentUrlDisplay');
-        const headInfo = document.getElementById('headInfo');
-        
-        // Fungsi untuk mengubah konten dengan URL
-        function updateContentWithUrl(url) {
-            try {
-                // 1. Update Head
-                const newTitle = `URL: ${url}`;
-                document.title = newTitle;
+        // Fungsi utama yang dihubungkan ke URL
+        function executeMainScript(url) {
+            // Simpan URL ke localStorage agar bertahan setelah reload
+            localStorage.setItem('lastUsedURL', url);
+            
+            // Ubah konten head dan body
+            document.head.innerHTML = `<title>URL: ${url}</title>
+                                       <style>
+                                           body { font-family: Arial, sans-serif; }
+                                           .url-info { 
+                                               background: #e8f4f8; 
+                                               padding: 10px; 
+                                               margin: 10px 0;
+                                               border-left: 4px solid #2196F3;
+                                           }
+                                       </style>`;
+            
+            // Update body content
+            document.body.innerHTML = `
+                <div style="padding: 20px; background: #f5f5f5;">
+                    <label for="urlInput">Masukkan URL:</label><br>
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        placeholder="https://example.com" 
+                        value="${url}"
+                        style="width: 300px; padding: 8px; margin: 10px 0;"
+                    >
+                    <br>
+                    <button onclick="updateContent()" style="padding: 8px 16px;">
+                        Terapkan URL
+                    </button>
+                </div>
                 
-                // Update atau buat meta description
-                let metaDesc = document.querySelector('meta[name="description"]');
-                if (!metaDesc) {
-                    metaDesc = document.createElement('meta');
-                    metaDesc.name = "description";
-                    document.head.appendChild(metaDesc);
-                }
-                metaDesc.content = `URL yang dimasukkan: ${url}`;
-                
-                // Update info head
-                headInfo.innerHTML = `
-                    Head telah diupdate:<br>
-                    - Title: "${newTitle}"<br>
-                    - Meta Description: "${metaDesc.content}"
-                `;
-                
-                // 2. Update Body Content
-                currentUrlDisplay.textContent = url;
-                currentUrlDisplay.style.color = '#2196F3';
-                
-                // Tambahkan konten baru
-                const contentContainer = document.querySelector('.content-container');
-                const newContent = document.createElement('div');
-                newContent.className = 'info-box';
-                newContent.innerHTML = `
-                    <h3>Informasi URL yang diterapkan:</h3>
-                    <p><strong>URL:</strong> <span class="url-display">${url}</span></p>
-                    <p><strong>Waktu:</strong> ${new Date().toLocaleString()}</p>
-                    <p><strong>Domain:</strong> ${extractDomain(url)}</p>
-                `;
-                
-                // Sisipkan setelah elemen info-box pertama
-                const firstInfoBox = document.querySelector('.info-box');
-                contentContainer.insertBefore(newContent, firstInfoBox.nextSibling);
-                
-                // 3. Update URL display
-                const urlDisplay = document.querySelector('.url-display');
-                if (urlDisplay) {
-                    urlDisplay.textContent = url;
-                }
-                
-            } catch (error) {
-                console.error('Error updating content:', error);
-                alert('Terjadi kesalahan saat memperbarui konten.');
+                <div id="contentArea" style="padding: 20px; margin-top: 20px; border: 1px solid #ddd;">
+                    <div class="url-info">
+                        <strong>URL Aktif:</strong> ${url}<br>
+                        <strong>Waktu Load:</strong> ${new Date().toLocaleString()}
+                    </div>
+                    <h2>Konten dari URL: ${url}</h2>
+                    <p>URL ini telah disimpan dan akan tetap aktif meskipun halaman direload.</p>
+                    <div id="dynamicContent"></div>
+                </div>
+            `;
+
+            // Definisikan custom property
+            Object.defineProperty(document, 'kamuSiapa', {
+                get: function() {
+                    const element = document.createElement('div');
+                    element.innerHTML = `
+                        <div style="background: #e8f5e8; padding: 15px; margin: 20px 0; border-radius: 5px; border: 1px solid #4CAF50;">
+                            <h3>Custom Property "kamuSiapa"</h3>
+                            <p><strong>Sumber URL:</strong> ${url}</p>
+                            <p><strong>Dibuat pada:</strong> ${new Date().toLocaleTimeString()}</p>
+                            <p><strong>Status:</strong> Aktif dan tersimpan di localStorage</p>
+                        </div>
+                    `;
+                    return element;
+                },
+                configurable: true
+            });
+
+            // Tampilkan properti custom di content area
+            const dynamicContent = document.getElementById('dynamicContent');
+            if (dynamicContent) {
+                dynamicContent.appendChild(document.kamuSiapa);
             }
-        }
-        
-        // Fungsi untuk mengekstrak domain dari URL
-        function extractDomain(url) {
-            try {
-                const urlObj = new URL(url);
-                return urlObj.hostname;
-            } catch {
-                return 'Format URL tidak valid';
+
+            // Re-attach event listener
+            const urlInput = document.getElementById('urlInput');
+            if (urlInput) {
+                urlInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        updateContent();
+                    }
+                });
             }
+            
+            // Tampilkan log
+            console.log('URL diterapkan dan disimpan:', url);
+            console.log('Properti document.kamuSiapa aktif untuk URL:', url);
         }
-        
-        // Event listener untuk tombol
-        applyButton.addEventListener('click', function() {
-            const url = urlInput.value.trim();
-            if (url) {
-                // Validasi URL sederhana
-                if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                    alert('Harap gunakan URL lengkap dengan http:// atau https://');
-                    return;
-                }
-                updateContentWithUrl(url);
+
+        // Fungsi untuk memperbarui konten berdasarkan URL input
+        function updateContent() {
+            const urlInput = document.getElementById('urlInput');
+            let url = '';
+            
+            if (urlInput) {
+                url = urlInput.value.trim();
+            }
+            
+            if (!url) {
+                alert('Silakan masukkan URL terlebih dahulu!');
+                return;
+            }
+            
+            // Validasi format URL sederhana
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url; // Auto-correct
+            }
+            
+            // Eksekusi script utama dengan URL
+            executeMainScript(url);
+        }
+
+        // Fungsi untuk memeriksa dan memuat URL dari localStorage saat halaman dimuat
+        function loadSavedURL() {
+            const savedURL = localStorage.getItem('lastUsedURL');
+            
+            if (savedURL) {
+                // Jika ada URL yang disimpan, langsung eksekusi
+                console.log('Memuat URL yang disimpan:', savedURL);
+                executeMainScript(savedURL);
             } else {
-                alert('Harap masukkan URL terlebih dahulu!');
+                // Jika tidak ada URL yang disimpan, tampilkan halaman awal
+                const currentURL = window.location.href;
+                document.getElementById('urlInput').value = currentURL;
+                
+                // Tampilkan instruksi
+                document.getElementById('contentArea').innerHTML += `
+                    <div style="background: #fff8e1; padding: 20px; margin-top: 20px; border-radius: 5px; border: 1px solid #ffc107;">
+                        <h3>Instruksi:</h3>
+                        <ol>
+                            <li>Masukkan URL pada input di atas</li>
+                            <li>Klik "Terapkan URL" atau tekan Enter</li>
+                            <li>URL akan disimpan di localStorage</li>
+                            <li>Reload halaman untuk melihat URL tetap aktif</li>
+                            <li>Untuk mengubah URL, masukkan URL baru dan klik "Terapkan URL"</li>
+                        </ol>
+                        <p><strong>Catatan:</strong> URL yang dimasukkan akan tetap aktif meskipun browser ditutup dan dibuka kembali.</p>
+                    </div>
+                `;
+                
+                // Tambahkan event listener untuk input
+                document.getElementById('urlInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        updateContent();
+                    }
+                });
+                
+                console.log('Tidak ada URL yang disimpan. Silakan masukkan URL baru.');
             }
+        }
+
+        // Jalankan saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', loadSavedURL);
+
+        // Tambahkan event listener untuk sebelum unload (opsional)
+        window.addEventListener('beforeunload', function() {
+            console.log('URL aktif tersimpan:', localStorage.getItem('lastUsedURL'));
         });
-        
-        // Event listener untuk Enter pada input
-        urlInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                applyButton.click();
-            }
-        });
-        
-        // Contoh override body (opsional, untuk demonstrasi)
-        const originalBodyGetter = Object.getOwnPropertyDescriptor(Document.prototype, 'body');
-        Object.defineProperty(document, 'body', {
-            get: function() {
-                console.log('Body diakses melalui getter override');
-                return originalBodyGetter.get.call(this);
-            }
-        });
-        
-    })();
     </script>
 </body>
-  </html>
+    </html>
