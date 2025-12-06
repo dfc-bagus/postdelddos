@@ -1,10 +1,615 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Situs Saya</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J Pulsa Transaksi</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #151932;
+            --bg-card: #1a1f3a;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #7b2ff7;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0a6;
+            --border-color: #2a2f4a;
+            --success: #00ff88;
+            --warning: #ffaa00;
+        }
+
+        .light {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --accent-primary: #0066ff;
+            --accent-secondary: #7b2ff7;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --success: #00aa55;
+            --warning: #ff8800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(123, 47, 247, 0.1) 0%, transparent 50%);
+            animation: backgroundShift 15s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.5)); }
+            50% { filter: drop-shadow(0 0 20px rgba(123, 47, 247, 0.5)); }
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
+        }
+
+        .card-header {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-header::before {
+            content: '▸';
+            color: var(--accent-secondary);
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+        }
+
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 217, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .bookmarklet-output {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            word-break: break-all;
+            font-size: 12px;
+            color: var(--text-secondary);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .bookmarklet-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--success);
+            color: #000;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .bookmarklet-link:hover {
+            background: var(--accent-primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .iframe-container {
+            margin-top: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg-secondary);
+            min-height: 500px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            display: block;
+        }
+
+        .warning {
+            background: rgba(255, 170, 0, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .info {
+            background: rgba(0, 217, 255, 0.1);
+            border-left: 4px solid var(--accent-primary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .info strong {
+            color: var(--accent-primary);
+        }
+
+        .template-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .template-btn {
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .template-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Dark mode toggle */
+        html.light body::before {
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 102, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(123, 47, 247, 0.08) 0%, transparent 50%);
+        }
+    </style>
 </head>
 <body>
-    <h1>Halo GitHub Pages!</h1>
-    <p>Situs saya sudah online.</p>
-</body>
-</html>
+    <div class="container">
+        <header>
+            <h1>⚡ Jr G</h1>
+            <p class="subtitle">AGEN PULSA</p>
+        </header>
+
+        <!-- KARTU URL - Ditempatkan pertama -->
+        <div class="card">
+            <div class="card-header">URL WEBSITE</div>
+            
+            <div class="info">
+                <strong>🌐 Masukkan URL:</strong> Isi kolom URL di bawah ini untuk memuat website yang ingin diuji
+            </div>
+
+            <div class="input-group">
+                <label>URL Website Target</label>
+                <input type="text" id="urlInput" placeholder="https://example.com" value="https://example.com">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="loadIframe()">🌐 Load Website</button>
+                <button class="btn" onclick="loadIframeWithCustomJS()">🚀 Load dengan J PULSA</button>
+                <button class="btn" onclick="clearIframe()">🗑️ Clear</button>
+            </div>
+
+            <div id="iframeContainer" class="iframe-container" style="display: none;">
+                <iframe id="targetIframe" sandbox="allow-scripts allow-same-origin"></iframe>
+            </div>
+        </div>
+
+        <!-- KARTU J PULSA - Ditempatkan kedua -->
+        <div class="card">
+            <div class="card-header">J PULSA - KODE JAVASCRIPT</div>
+            
+            <div class="info">
+                <strong>📝 Kode JavaScript:</strong> Masukkan kode JavaScript yang akan dieksekusi pada URL di atas
+            </div>
+
+            <div class="template-buttons">
+                <button class="template-btn" onclick="loadTemplate('hello')">Hello Alert</button>
+                <button class="template-btn" onclick="loadTemplate('custom')">Script Custom Anda</button>
+                <button class="template-btn" onclick="loadTemplate('inspect')">Page Inspector</button>
+                <button class="template-btn" onclick="loadTemplate('highlight')">Highlight Links</button>
+            </div>
+
+            <div class="input-group">
+                <label>Kode J PULSA (JavaScript)</label>
+                <textarea id="jsCode" placeholder="Masukkan kode J PULSA (JavaScript) Anda di sini...">(function() {
+  document.head.innerHTML = "Halo";
+  document.body.innerHTML = "Halo";
+  Object.defineProperty(document, 'body', {
+    get: function() {
+      return document.createElement('body');
+    }
+  });
+})();</textarea>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="generateBookmarklet()">🔗 Generate Bookmarklet</button>
+                <button class="btn" onclick="copyBookmarklet()">📋 Copy ke Clipboard</button>
+            </div>
+
+            <div id="bookmarkletOutput" style="display: none;">
+                <div class="info">
+                    <strong>✅ Bookmarklet berhasil dibuat!</strong><br>
+                    <strong>Cara menggunakan:</strong><br>
+                    1. Drag tautan bookmarklet ke bookmarks bar browser Anda<br>
+                    2. Buka website target (URL di atas)<br>
+                    3. Klik bookmarklet untuk mengeksekusi kode JavaScript
+                </div>
+                <div class="bookmarklet-output">
+                    <code id="bookmarkletCode"></code>
+                </div>
+                <a id="bookmarkletLink" class="bookmarklet-link" target="_blank">🚀 Jalankan Bookmarklet</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">📚 Petunjuk Penggunaan</div>
+            
+            <div class="info">
+                <strong>Langkah-langkah:</strong><br>
+                1. <strong>URL Website</strong> - Masukkan URL website yang ingin diuji di bagian pertama<br>
+                2. <strong>J PULSA</strong> - Masukkan kode JavaScript di bagian kedua<br>
+                3. <strong>Load Website</strong> - Klik tombol untuk memuat website<br>
+                4. <strong>Load dengan J PULSA</strong> - Klik untuk memuat website dengan kode JavaScript<br>
+                5. <strong>Generate Bookmarklet</strong> - Buat bookmarklet untuk digunakan di browser lain
+                <br><br>
+                <strong>Catatan:</strong> Website akan ditampilkan dalam iframe untuk keamanan.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.remove('light');
+        } else {
+            document.documentElement.classList.add('light');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.remove('light');
+            } else {
+                document.documentElement.classList.add('light');
+            }
+        });
+
+        // Templates
+        const templates = {
+            hello: `alert('Halo! TRANSAKSI berhasil !');`,
+            custom: `(function() {
+  document.head.innerHTML = "Halo";
+  document.body.innerHTML = "Halo";
+  Object.defineProperty(document, 'body', {
+    get: function() {
+      return document.createElement('body');
+    }
+  });
+})();`,
+            inspect: `(function() {
+  var info = 'Page Info:\\n';
+  info += 'Title: ' + document.title + '\\n';
+  info += 'URL: ' + window.location.href + '\\n';
+  info += 'Domain: ' + window.location.hostname + '\\n';
+  info += 'Links: ' + document.links.length + '\\n';
+  info += 'Images: ' + document.images.length;
+  alert(info);
+})();`,
+            highlight: `(function() {
+  var links = document.getElementsByTagName('a');
+  for(var i = 0; i < links.length; i++) {
+    links[i].style.backgroundColor = 'yellow';
+    links[i].style.border = '2px solid red';
+  }
+  alert('Highlighted ' + links.length + ' links!');
+})();`
+        };
+
+        function loadTemplate(name) {
+            document.getElementById('jsCode').value = templates[name];
+        }
+
+        function generateBookmarklet() {
+            const code = document.getElementById('jsCode').value.trim();
+            if (!code) {
+                alert('Masukkan kode J PULSA terlebih dahulu!');
+                return;
+            }
+
+            // Generate bookmarklet URL
+            const bookmarkletUrl = 'javascript:' + encodeURIComponent(code);
+            
+            // Display output
+            document.getElementById('bookmarkletOutput').style.display = 'block';
+            document.getElementById('bookmarkletCode').textContent = bookmarkletUrl;
+            document.getElementById('bookmarkletLink').href = bookmarkletUrl;
+
+            // Scroll to output
+            document.getElementById('bookmarkletOutput').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function copyBookmarklet() {
+            const code = document.getElementById('bookmarkletCode').textContent;
+            if (!code) {
+                alert('Generate terlebih dahulu!');
+                return;
+            }
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(code).then(() => {
+                alert('✅ Berhasil di copy ke clipboard!');
+            }).catch(err => {
+                // Fallback method
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('✅ Berhasil dicopy ke clipboard!');
+                } catch (err) {
+                    alert('❌ Gagal copy. Silakan copy manual dari text box.');
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        function loadIframe() {
+            let url = document.getElementById('urlInput').value.trim();
+            if (!url) {
+                alert('Masukkan URL terlebih dahulu!');
+                return;
+            }
+
+            // Add protocol if missing
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+
+            // Show iframe container
+            document.getElementById('iframeContainer').style.display = 'block';
+            
+            // Load URL in iframe
+            const iframe = document.getElementById('targetIframe');
+            iframe.src = url;
+
+            // Scroll to iframe
+            document.getElementById('iframeContainer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function loadIframeWithCustomJS() {
+          let url = document.getElementById('urlInput').value.trim();
+          let customCode = document.getElementById('jsCode').value.trim();
+          
+          if (!url) {
+            alert('Masukkan URL terlebih dahulu!');
+            return;
+          }
+          
+          if (!customCode) {
+            alert('Masukkan kode J PULSA terlebih dahulu!');
+            return;
+          }
+          
+          // Add protocol if missing
+          if (!url.startsWith('http://') && !url.startsWith('https://')) {
+              url = 'https://' + url;
+          }
+          
+          // Buat halaman HTML dengan kode custom
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <base href="${url}">
+              <script>
+                ${customCode}
+              </script>
+            </head>
+            <body>
+              <iframe src="${url}" style="width:100%; height:100vh; border:none;"></iframe>
+            </body>
+            </html>
+          `;
+          
+          // Show iframe container
+          document.getElementById('iframeContainer').style.display = 'block';
+          
+          // Load ke iframe
+          const iframe = document.getElementById('targetIframe');
+          iframe.srcdoc = htmlContent;
+          
+          // Scroll to iframe
+          doc
