@@ -1,40 +1,122 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J Pulsa Transaksi</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #0a0e27;
-            --bg-secondary: #151932;
-            --bg-card: #1a1f3a;
-            --accent-primary: #00d9ff;
-            --accent-secondary: #7b2ff7;
-            --text-primary: #e8eaed;
-            --text-secondary: #9aa0a6;
-            --border-color: #2a2f4a;
-            --success: #00ff88;
-            --warning: #ffaa00;
+<script>
+(function() {
+  // Tambahkan input URL ke halaman
+  const urlInput = document.createElement('input');
+  urlInput.type = 'text';
+  urlInput.placeholder = 'Masukkan URL di sini...';
+  urlInput.id = 'urlInput';
+  urlInput.style.cssText = `
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 300px;
+    padding: 10px;
+    z-index: 9999;
+    background: white;
+    border: 2px solid #333;
+    border-radius: 5px;
+  `;
+  
+  // Tambahkan tombol untuk menerapkan URL
+  const applyButton = document.createElement('button');
+  applyButton.textContent = 'Terapkan';
+  applyButton.id = 'applyButton';
+  applyButton.style.cssText = `
+    position: fixed;
+    top: 10px;
+    left: 320px;
+    padding: 10px 15px;
+    z-index: 9999;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  `;
+  
+  // Tambahkan elemen input dan tombol ke body
+  document.body.appendChild(urlInput);
+  document.body.appendChild(applyButton);
+  
+  // Fungsi untuk mengubah konten dengan URL
+  function updateContentWithUrl(url) {
+    // Update head
+    document.head.innerHTML = `<title>URL: ${url}</title>
+                               <meta name="description" content="URL yang dimasukkan: ${url}">`;
+    
+    // Update body
+    document.body.innerHTML = `
+      <div style="padding: 20px; font-family: Arial, sans-serif;">
+        <h1>URL yang Anda Masukkan:</h1>
+        <p style="font-size: 18px; color: #0066cc;"><strong>${url}</strong></p>
+        <p>URL ini telah diterapkan ke kedua elemen (head dan body)</p>
+        <div style="margin-top: 20px;">
+          <h3>Informasi Head:</h3>
+          <pre style="background: #f4f4f4; padding: 10px;">${document.head.innerHTML}</pre>
+        </div>
+      </div>
+    `;
+    
+    // Tambahkan kembali input dan tombol setelah mengganti konten
+    document.body.appendChild(urlInput);
+    document.body.appendChild(applyButton);
+    
+    // Setup event listener baru untuk tombol
+    document.getElementById('applyButton').onclick = function() {
+      const newUrl = document.getElementById('urlInput').value;
+      if (newUrl) {
+        updateContentWithUrl(newUrl);
+      }
+    };
+    
+    // Juga bisa langsung dengan Enter
+    document.getElementById('urlInput').onkeypress = function(e) {
+      if (e.key === 'Enter') {
+        const newUrl = this.value;
+        if (newUrl) {
+          updateContentWithUrl(newUrl);
         }
-
-        .light {
-            --bg-primary: #f0f2f5;
-            --bg-secondary: #ffffff;
-            --bg-card: #ffffff;
-            --accent-primary: #0066ff;
-            --accent-secondary: #7b2ff7;
-            --text-primary: #1a1a1a;
-            --text-secondary: #666666;
-            --border-color: #e0e0e0;
-            --success: #00aa55;
-            --warning: #ff8800;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
+      }
+    };
+  }
+  
+  // Event listener untuk tombol
+  applyButton.onclick = function() {
+    const url = urlInput.value;
+    if (url) {
+      updateContentWithUrl(url);
+    }
+  };
+  
+  // Event listener untuk Enter pada input
+  urlInput.onkeypress = function(e) {
+    if (e.key === 'Enter') {
+      const url = this.value;
+      if (url) {
+        updateContentWithUrl(url);
+      }
+    }
+  };
+  
+  // Override body untuk demonstrasi
+  Object.defineProperty(document, 'body', {
+    get: function() {
+      const fakeBody = document.createElement('body');
+      fakeBody.innerHTML = `
+        <div style="padding: 20px;">
+          <h2>Body di-override!</h2>
+          <p>Gunakan input di atas untuk memasukkan URL</p>
+          <p>URL akan diterapkan ke head dan body</p>
+        </div>
+      `;
+      fakeBody.appendChild(urlInput);
+      fakeBody.appendChild(applyButton);
+      return fakeBody;
+    }
+  });
+  
+})();
+</script>            padding: 0;
             box-sizing: border-box;
         }
 
