@@ -1,182 +1,227 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>URL Persistence Example</title>
+    <title>URL to GOLKAR</title>
+    <style>
+        body {
+            transition: background-color 0.5s ease;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .yellow-bg {
+            background-color: yellow !important;
+        }
+        
+        .golkar-text {
+            font-size: 72px;
+            font-weight: bold;
+            color: blue;
+            text-align: center;
+            margin: 50px 0;
+            text-shadow: 3px 3px 5px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .url-display {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 3px solid blue;
+        }
+        
+        .url-input-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid blue;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        
+        button {
+            background: blue;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: darkblue;
+        }
+    </style>
 </head>
-<body>
-    <!-- URL Input Kolom -->
-    <div style="padding: 20px; background: #f5f5f5;">
-        <label for="urlInput">Masukkan URL:</label><br>
+<body id="mainBody">
+    <div class="url-input-container">
+        <h2>Masukkan URL untuk Mengubah Tampilan</h2>
         <input 
             type="url" 
             id="urlInput" 
             placeholder="https://example.com" 
-            style="width: 300px; padding: 8px; margin: 10px 0;"
+            value=""
         >
         <br>
-        <button onclick="updateContent()" style="padding: 8px 16px;">
-            Terapkan URL
-        </button>
+        <button onclick="applyURL()">Terapkan URL</button>
+        <p style="color: #666; font-size: 14px; margin-top: 10px;">
+            Setelah memasukkan URL, halaman akan berubah menjadi background kuning dengan tulisan GOLKAR.
+            Perubahan ini akan tetap ada meskipun halaman direload.
+        </p>
     </div>
 
-    <!-- Area untuk menampilkan konten -->
-    <div id="contentArea" style="padding: 20px; margin-top: 20px; border: 1px solid #ddd;">
-        Konten akan diubah di sini berdasarkan URL
+    <div id="contentArea">
+        <!-- Konten akan ditampilkan di sini setelah URL diterapkan -->
     </div>
 
     <script>
-        // Fungsi utama yang dihubungkan ke URL
-        function executeMainScript(url) {
-            // Simpan URL ke localStorage agar bertahan setelah reload
-            localStorage.setItem('lastUsedURL', url);
-            
-            // Ubah konten head dan body
-            document.head.innerHTML = `<title>URL: ${url}</title>
-                                       <style>
-                                           body { font-family: Arial, sans-serif; }
-                                           .url-info { 
-                                               background: #e8f4f8; 
-                                               padding: 10px; 
-                                               margin: 10px 0;
-                                               border-left: 4px solid #2196F3;
-                                           }
-                                       </style>`;
-            
-            // Update body content
-            document.body.innerHTML = `
-                <div style="padding: 20px; background: #f5f5f5;">
-                    <label for="urlInput">Masukkan URL:</label><br>
-                    <input 
-                        type="url" 
-                        id="urlInput" 
-                        placeholder="https://example.com" 
-                        value="${url}"
-                        style="width: 300px; padding: 8px; margin: 10px 0;"
-                    >
-                    <br>
-                    <button onclick="updateContent()" style="padding: 8px 16px;">
-                        Terapkan URL
-                    </button>
-                </div>
-                
-                <div id="contentArea" style="padding: 20px; margin-top: 20px; border: 1px solid #ddd;">
-                    <div class="url-info">
-                        <strong>URL Aktif:</strong> ${url}<br>
-                        <strong>Waktu Load:</strong> ${new Date().toLocaleString()}
-                    </div>
-                    <h2>Konten dari URL: ${url}</h2>
-                    <p>URL ini telah disimpan dan akan tetap aktif meskipun halaman direload.</p>
-                    <div id="dynamicContent"></div>
-                </div>
-            `;
-
-            // Definisikan custom property
-            Object.defineProperty(document, 'kamuSiapa', {
-                get: function() {
-                    const element = document.createElement('div');
-                    element.innerHTML = `
-                        <div style="background: #e8f5e8; padding: 15px; margin: 20px 0; border-radius: 5px; border: 1px solid #4CAF50;">
-                            <h3>Custom Property "kamuSiapa"</h3>
-                            <p><strong>Sumber URL:</strong> ${url}</p>
-                            <p><strong>Dibuat pada:</strong> ${new Date().toLocaleTimeString()}</p>
-                            <p><strong>Status:</strong> Aktif dan tersimpan di localStorage</p>
-                        </div>
-                    `;
-                    return element;
-                },
-                configurable: true
-            });
-
-            // Tampilkan properti custom di content area
-            const dynamicContent = document.getElementById('dynamicContent');
-            if (dynamicContent) {
-                dynamicContent.appendChild(document.kamuSiapa);
-            }
-
-            // Re-attach event listener
+        // Fungsi untuk menerapkan URL dan mengubah tampilan
+        function applyURL() {
             const urlInput = document.getElementById('urlInput');
-            if (urlInput) {
-                urlInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        updateContent();
-                    }
-                });
-            }
-            
-            // Tampilkan log
-            console.log('URL diterapkan dan disimpan:', url);
-            console.log('Properti document.kamuSiapa aktif untuk URL:', url);
-        }
-
-        // Fungsi untuk memperbarui konten berdasarkan URL input
-        function updateContent() {
-            const urlInput = document.getElementById('urlInput');
-            let url = '';
-            
-            if (urlInput) {
-                url = urlInput.value.trim();
-            }
+            const url = urlInput.value.trim();
             
             if (!url) {
                 alert('Silakan masukkan URL terlebih dahulu!');
                 return;
             }
             
-            // Validasi format URL sederhana
+            // Validasi format URL
+            let finalURL = url;
             if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'https://' + url; // Auto-correct
+                finalURL = 'https://' + url;
             }
             
-            // Eksekusi script utama dengan URL
-            executeMainScript(url);
+            // Simpan URL ke localStorage
+            localStorage.setItem('savedURL', finalURL);
+            
+            // Ubah tampilan halaman
+            changeToGolkarTheme(finalURL);
+            
+            // Simpan juga ke sessionStorage untuk akses cepat
+            sessionStorage.setItem('currentURL', finalURL);
         }
-
-        // Fungsi untuk memeriksa dan memuat URL dari localStorage saat halaman dimuat
-        function loadSavedURL() {
-            const savedURL = localStorage.getItem('lastUsedURL');
+        
+        // Fungsi untuk mengubah tema menjadi GOLKAR
+        function changeToGolkarTheme(url) {
+            // 1. Ubah background body menjadi kuning
+            document.body.classList.add('yellow-bg');
+            
+            // 2. Kosongkan dan isi ulang body dengan konten baru
+            document.body.innerHTML = `
+                <div class="url-input-container">
+                    <h2>URL yang Aktif</h2>
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        placeholder="https://example.com" 
+                        value="${url}"
+                    >
+                    <br>
+                    <button onclick="applyURL()">Ganti URL</button>
+                    <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                        URL ini disimpan. Reload halaman untuk melihat perubahan tetap ada.
+                    </p>
+                </div>
+                
+                <div class="url-display">
+                    <h3>URL yang sedang aktif:</h3>
+                    <p style="font-size: 18px; color: blue; word-break: break-all;">
+                        ${url}
+                    </p>
+                    <p style="color: green;">
+                        ✅ URL berhasil diterapkan pada: ${new Date().toLocaleString()}
+                    </p>
+                </div>
+                
+                <!-- TULISAN GOLKAR BESAR -->
+                <div class="golkar-text">GOLKAR</div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <p style="font-size: 20px; color: red; font-weight: bold;">
+                        Tampilan ini dihasilkan dari URL: ${url}
+                    </p>
+                    <p style="color: #666;">
+                        Halaman memiliki background kuning dan tulisan GOLKAR sesuai permintaan
+                    </p>
+                </div>
+                
+                <div style="position: fixed; bottom: 10px; right: 10px; background: white; padding: 10px; border-radius: 5px; border: 2px solid blue;">
+                    <small>Theme: GOLKAR | URL: ${url}</small>
+                </div>
+            `;
+            
+            // Tambahkan kembali event listener ke input baru
+            setTimeout(() => {
+                const newInput = document.getElementById('urlInput');
+                if (newInput) {
+                    newInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            applyURL();
+                        }
+                    });
+                }
+            }, 100);
+            
+            console.log('Tema GOLKAR diterapkan untuk URL:', url);
+        }
+        
+        // Fungsi untuk memeriksa apakah ada URL yang tersimpan
+        function checkSavedURL() {
+            const savedURL = localStorage.getItem('savedURL');
             
             if (savedURL) {
-                // Jika ada URL yang disimpan, langsung eksekusi
-                console.log('Memuat URL yang disimpan:', savedURL);
-                executeMainScript(savedURL);
+                // Jika ada URL yang tersimpan, langsung terapkan tema GOLKAR
+                console.log('Memuat URL yang tersimpan:', savedURL);
+                changeToGolkarTheme(savedURL);
             } else {
-                // Jika tidak ada URL yang disimpan, tampilkan halaman awal
-                const currentURL = window.location.href;
-                document.getElementById('urlInput').value = currentURL;
+                // Jika tidak ada URL yang tersimpan, tampilkan form input
+                console.log('Tidak ada URL yang tersimpan. Menampilkan form input.');
                 
-                // Tampilkan instruksi
-                document.getElementById('contentArea').innerHTML += `
-                    <div style="background: #fff8e1; padding: 20px; margin-top: 20px; border-radius: 5px; border: 1px solid #ffc107;">
-                        <h3>Instruksi:</h3>
-                        <ol>
-                            <li>Masukkan URL pada input di atas</li>
-                            <li>Klik "Terapkan URL" atau tekan Enter</li>
-                            <li>URL akan disimpan di localStorage</li>
-                            <li>Reload halaman untuk melihat URL tetap aktif</li>
-                            <li>Untuk mengubah URL, masukkan URL baru dan klik "Terapkan URL"</li>
-                        </ol>
-                        <p><strong>Catatan:</strong> URL yang dimasukkan akan tetap aktif meskipun browser ditutup dan dibuka kembali.</p>
-                    </div>
-                `;
-                
-                // Tambahkan event listener untuk input
+                // Tambahkan event listener untuk Enter key
                 document.getElementById('urlInput').addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
-                        updateContent();
+                        applyURL();
                     }
                 });
-                
-                console.log('Tidak ada URL yang disimpan. Silakan masukkan URL baru.');
             }
         }
-
+        
         // Jalankan saat halaman dimuat
-        window.addEventListener('DOMContentLoaded', loadSavedURL);
-
-        // Tambahkan event listener untuk sebelum unload (opsional)
+        document.addEventListener('DOMContentLoaded', checkSavedURL);
+        
+        // Tambahkan juga event listener untuk beforeunload
         window.addEventListener('beforeunload', function() {
-            console.log('URL aktif tersimpan:', localStorage.getItem('lastUsedURL'));
+            console.log('URL aktif:', localStorage.getItem('savedURL'));
         });
+        
+        // Fungsi untuk reset (opsional, bisa diakses dari console)
+        window.resetAll = function() {
+            localStorage.removeItem('savedURL');
+            sessionStorage.removeItem('currentURL');
+            location.reload();
+        }
     </script>
 </body>
     </html>
